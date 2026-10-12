@@ -1,0 +1,98 @@
+# basics
+<digit> ::= [0-9]
+<esc_seq> ::= "\n" | "\0" | "\'" | "\\" | "\t"
+<letter> ::= [a-z] | [A-Z]
+<id_character> ::= <digit> | <letter> | "_"
+<identifier> ::=  (<letter> | "_") <id_character>*
+
+#types
+<basic_type> ::= "int" | "char" | "bool" | "float"
+<variable_type> ::= <basic_type> | <basic_type> ("*")*
+<function_type> ::= "void" | <variable_type>
+
+#literals
+<number> ::= <digit>+
+<fraction> ::= "." <digit>+
+<number_literal> ::= <number> <fraction>?
+<char_literal> ::= "'" <ascii_char> "'" #defining ascii_char is a waste of time
+<bool_literal> ::= "true" | "false"
+<null> ::= "nullptr"
+<literal> ::= <number_literal> | <char_literal> | <bool_literal> | <null>
+
+
+
+#meta overhead stuff
+<program> ::= <global_statement>*
+
+<global_statement> ::= <function_def> | <function_decl> | <variable_decl_init> | <array_decl>
+<local_statement> ::= <block> | <expression_statement> | <variable_decl_init> | <array_decl> | <assign_statement> | <if_statement> | <while_statement> | <return_statement> | <function_call_statement>
+<block> ::= "{" <local_statement>* "}"
+
+
+# functions
+<function_header> ::= <function_type> <identifier> "(" <param_list> ")"
+<function_decl> ::=  <function_header> ";"
+<function_def> ::= <function_header> <block>
+<function_call> ::= <identifier> "(" <argument_list>")"
+<function_call_statement> ::= <function_call> ";"
+
+#lists
+<param> ::=  <variable_type> <identifier>
+<param_list> ::= <param> ("," <param>)* | E #E means nothing
+
+<argument> ::= <expression>
+<argument_list> ::= <argument> ("," <argument>)* | E
+
+#expressions
+<primary> ::= <literal> | <function_call> | <identifier> | <array_access> | "(" <expression> ")"
+
+<cast> ::= "(" <basic_type> ")"
+<unary_op> ::= "-" | "!" | "&" | "*" | <cast>
+<unary> ::= <unary_op>* <primary>
+
+<factor_op> ::= "/" | "%" | "*"
+<factor> ::= <unary> (<factor_op> <unary>)*
+
+<term_op> ::= "+" | "-"
+<term> ::= <factor> (<term_op> <factor>)*
+
+<relational_op> ::= ">" | "<" | ">=" | "<="
+<relational> ::= <term> (<relational_op> <term>)*
+
+<equality_op> ::= "==" | "!="
+<equality> ::= <relational> (<equality_op> <relational>)*
+
+<and_op> ::= "&&"
+<logical_and> ::= <equality> (<and_op> <equality>)*
+
+<or_op> ::= "||"
+<expression> ::= <logical_and> (<or_op> <logical_and>)*
+
+#arrays
+<array_decl> ::= <variable_type> <identifier> "[" <number> "]" ";"
+<array_access> ::= <identifier> "[" <expression> "]"
+
+#variable decl/init
+<variable_decl_init> ::= <variable_type> <identifier> ("=" <expression>)? ";"
+
+#assign
+<lvalue> ::= "*" <expression> | <array_access> | <identifier>
+<assign_op> ::= "+=" | "-=" | "*=" | "%=" | "/=" | "="
+<assign_statement> ::= <lvalue> <assign_op> <expression> ";"
+
+#if
+<if> ::= "if" "(" <expression> ")" <local_statement>
+<else_if> ::= "else if" "(" <expression> ")" <local_statement>
+<else> ::= "else" <local_statement>
+
+<if_statement> ::= <if> <else_if>* <else>?
+
+#while
+<while_statement> ::= "while" "(" <expression> ")" <local_statement>
+
+#return
+<return_statement> ::= "return" <expression>? ";"
+
+#expression statement
+<expression_statement> ::= <expression> ";"
+
