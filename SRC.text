@@ -1,0 +1,76 @@
+// ==========================================
+// SECTION 1: The Warmup (Valid Code)
+// ==========================================
+int global_x = 100;
+char global_c;
+
+int multiply(int a, int b) {
+    return a * b;
+}
+
+// ==========================================
+// SECTION 2: Global Scope Recovery
+// ==========================================
+int valid_1;
+garbage_keyword global_y = 50;  // Error: Unknown type/keyword. Should sync to next global.
+void valid_2();
+int missing_semi                // Error: Missing ';'. Should sync to 'char'.
+char valid_3;
+
+// ==========================================
+// SECTION 3: The Parameter Crushers
+// ==========================================
+
+// 3A: The Internal Panic. Should drop 'while', save the body.
+int broken_params(int a, while, int c) {
+    int local_a = 1;
+    return local_a;
+}
+
+// 3B: Missing Parenthesis. Should fast-forward directly to '{'.
+void missing_paren(int x, int y {
+    int z = x;
+}
+
+// 3C: The "Stolen Semicolon" Test. Should realize it's just a prototype!
+char stolen_semi(int a, garbage ;
+
+// ==========================================
+// SECTION 4: Block Scope & Expressions
+// ==========================================
+int local_nightmares() {
+    int a = 5;
+
+    // Expression intruder: Should sync to ';'
+    int b = 10 + * 3;
+
+    // Missing semicolon: Should throw, but safely parse 'if'
+    int c = 20
+
+    if (a == 5) {
+        // Block panic: Should eat 'return' and sync to '}'
+        while return;
+    }
+
+    return c;
+}
+
+// ==========================================
+// SECTION 5: The "Bleed Out"
+// ==========================================
+
+// Missing ')', missing '{', and missing ';'.
+// It should bleed out, eat 'int func_survivor (', and attach the body to bleed_func!
+int bleed_func(int f, broken_token
+
+int func_survivor() {
+    return 0;
+}
+
+// ==========================================
+// SECTION 6: The Perfect Ending
+// ==========================================
+void final_function() {
+    int success = 1;
+    return;
+}
